@@ -4,7 +4,7 @@
 
 #end if
 
-#if defined(__linix__)
+#if defined(__linux__)
 #include "SDL2/SDL.h"
 
 #end if
@@ -29,8 +29,9 @@ cout<<"running on windows";
 cout<< "Running on apple";
 #end if
 
-#if defined(__linix__)
+#if defined(__linux__)
 cout<<"running on  linix";
+cout<< "Added on Linux";
 #end if
 
     SDL_Window *window;                    // Declare a pointer
