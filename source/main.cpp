@@ -48,6 +48,7 @@ cout<<"running on mac"<<endl;
 #if defined(__linux__)
 
 cout<<"running on linux"<<endl;
+cout<<"effectivly ran on linux"<<endl;
 
 #endif
 
