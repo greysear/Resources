@@ -13,6 +13,7 @@
 #if defined(__APPLE__)
 
 #include "SDL2/SDL.h"
+#include "SDL2_image/SDL_image.h"
 
 #endif
 
@@ -27,7 +28,9 @@
 #include <stdio.h>
 #include <iostream>
 using namespace std;
-
+float deltatime=0.0;
+int thistime=0;
+int lasttime;
 int main(int argc, char* argv[]) {
 
 
@@ -42,6 +45,14 @@ cout<< "Running on windows  "<<endl;
 #if defined(__APPLE__)
 
 cout<<"running on mac"<<endl;
+//get current working dir
+string s_cwd(getcwd(NULL,0));
+
+//create string lincing mac image folder
+
+string s_cwd_images = s_cwd +"/Resources/images";
+//test
+cout<<s_cwd_images<<endl;
 
 #endif
 
@@ -62,8 +73,8 @@ cout<<"effectivly ran on linux"<<endl;
         "An SDL2 window",                  // window title
         SDL_WINDOWPOS_UNDEFINED,           // initial x position
         SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        640,                               // width, in pixels
-        480,                               // height, in pixels
+        1024,                               // width, in pixels
+        768,                               // height, in pixels
         SDL_WINDOW_OPENGL                  // flags - see below
     );
 
@@ -73,11 +84,92 @@ cout<<"effectivly ran on linux"<<endl;
         printf("Could not create window: %s\n", SDL_GetError());
         return 1;
     }
+    //declare the renderer
+    SDL_Renderer *rend=NULL;
+
+    //create the renderer
+    rend=SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
+
+    string BKGDpath=s_cwd_images+"/placeholderimage.png";
+    cout<<BKGDpath<<endl;
+
+    SDL_Surface *surface=IMG_Load(BKGDpath.c_str());
+
+    //create sdl texture
+    SDL_Texture *bkgd1;
+    //place surface info into the tesxture bkgd1;
+    bkgd1=SDL_CreateTextureFromSurface(rend,surface);
+
+
+
+
+    //create backcround2
+
+    //create sdl texture
+       SDL_Texture *bkgd2;
+       //place surface info into the tesxture bkgd2;
+       bkgd2=SDL_CreateTextureFromSurface(rend,surface);
+       //freee the surface
+      // SDL_FreeSurface(surface);
+
+
+
+       SDL_Rect bkgd2Pos;
+        //set xywand h for rect
+        bkgd2Pos.x=0;
+        bkgd2Pos.y=-768;
+        bkgd2Pos.w=1024;
+        bkgd2Pos.h=768;
+
+
+
+
+    //create a rectangle xywh
+
+    SDL_Rect bkgd1Pos;
+    //set xywand h for rect
+    bkgd1Pos.x=0;
+    bkgd1Pos.y=0;
+    bkgd1Pos.w=1024;
+    bkgd1Pos.h=768;
+
+    //set temp variables to hold movement
+
+    float bg1pos_x=0,bg1pos_y=0;
+    //set speed
+    int backspeed=100;
+
+    float bg2pos_x=0,bg2pos_y=-768;
+      //set speed
+      int backspeed2=100;
+
+      //load path to cursor
+
+      string curpath=s_cwd_images+"/cursor.png";
+          cout<<curpath<<endl;
+//create surface for cursor
+          surface=IMG_Load(curpath.c_str());
+
+          //create sdl texture
+          SDL_Texture *cur;
+          //place surface info into the texture for cursor;
+          cur=SDL_CreateTextureFromSurface(rend,surface);
+
+          SDL_FreeSurface(surface);
+
+          SDL_Rect curpos;
+          curpos.x=100;
+          curpos.y=100;
+          curpos.w=50;
+          curpos.h=50;
+
+
+
 	//The surface contained by the window
-	SDL_Surface* screenSurface = NULL;
+	//SDL_Surface* screenSurface = NULL;
 
 	//Get window surface
-	screenSurface = SDL_GetWindowSurface( window );
+	//screenSurface = SDL_GetWindowSurface( window );
 
 	//set up game controller
 	SDL_GameController* gGameController=NULL;
@@ -101,10 +193,10 @@ cout<<"effectivly ran on linux"<<endl;
 
 
 	//Fill the surface white
-	SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0, 42, 254 ) );
+	///SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0, 42, 254 ) );
 
 	//Update the surface
-	SDL_UpdateWindowSurface( window );
+	//SDL_UpdateWindowSurface( window );
 
     // The window is open: could enter program loop here (see SDL_PollEvent())
 	while(!quit)
@@ -123,6 +215,10 @@ cout<<"effectivly ran on linux"<<endl;
 
 			while (menu)
 			{
+
+				thistime=SDL_GetTicks();
+				deltatime=(float)(thistime-lasttime)/1000;
+				lasttime=thistime;
 				//cheack for input events
 				if(SDL_PollEvent(&event))
 				{
@@ -164,6 +260,45 @@ cout<<"effectivly ran on linux"<<endl;
 						break;
 					}
 				}
+				//update background one
+
+			 bg1pos_y +=(backspeed*1)*deltatime;
+
+			 //set the new back ground one pos
+			 bkgd1Pos.y=(int)( bg1pos_y+0.5f);
+
+			 //reset when off bottom the bottom of the screen
+			 if(bkgd1Pos.y>=768)
+			 {
+				bkgd1Pos.y=-768;
+				bg1pos_y=bkgd1Pos.y;
+
+
+			 }
+
+			 bg2pos_y +=(backspeed2*1)*deltatime;
+
+					 //set the new back ground one pos
+					 bkgd2Pos.y=(int)( bg2pos_y+0.5f);
+
+					 //reset when off bottom the bottom of the screen
+					 if(bkgd2Pos.y>=768)
+					 {
+						bkgd2Pos.y=-768;
+						bg2pos_y=bkgd2Pos.y;
+
+
+					 }
+
+
+
+				SDL_RenderClear(rend);
+				//draw image
+				SDL_RenderCopy(rend,bkgd1,NULL,&bkgd1Pos);
+				SDL_RenderCopy(rend,bkgd2,NULL,&bkgd2Pos);
+				SDL_RenderCopy(rend,cur,NULL,&curpos);
+
+				SDL_RenderPresent(rend);
 
 			}
 			break;
