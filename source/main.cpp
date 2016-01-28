@@ -31,6 +31,60 @@ using namespace std;
 float deltatime=0.0;
 int thistime=0;
 int lasttime;
+
+   //set speed
+   int backspeed=100;
+
+
+     //set speed
+     int backspeed2=100;
+
+
+//sdl rect pos bg1 and 2
+
+SDL_Rect bkgd1Pos,bkgd2Pos;
+///background temp var
+float bg1pos_x=0,bg1pos_y=0;
+float bg2pos_x=0,bg2pos_y=-768;
+//move background
+void updatebackground()
+{
+	//update background one
+
+			 bg1pos_y +=(backspeed*1)*deltatime;
+
+			 //set the new back ground one pos
+			 bkgd1Pos.y= (int)( bg1pos_y + 0.5f);
+
+			 //reset when off bottom the bottom of the screen
+			 if(bkgd1Pos.y>=768)
+			 {
+				bkgd1Pos.y=-768;
+				bg1pos_y=bkgd1Pos.y;
+
+
+			 }
+
+			 bg2pos_y +=(backspeed2*1)*deltatime;
+
+					 //set the new back ground one pos
+					 bkgd2Pos.y=(int)( bg2pos_y+0.5f);
+
+					 //reset when off bottom the bottom of the screen
+					 if(bkgd2Pos.y>=768)
+					 {
+						bkgd2Pos.y=-768;
+						bg2pos_y=bkgd2Pos.y;
+
+
+					 }
+
+}
+
+
+
+
+
 int main(int argc, char* argv[]) {
 
 
@@ -90,7 +144,7 @@ cout<<"effectivly ran on linux"<<endl;
     //create the renderer
     rend=SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
 
-    string BKGDpath=s_cwd_images+"/placeholderimage.png";
+    string BKGDpath=s_cwd_images+"/back1.png";
     cout<<BKGDpath<<endl;
 
     SDL_Surface *surface=IMG_Load(BKGDpath.c_str());
@@ -105,6 +159,12 @@ cout<<"effectivly ran on linux"<<endl;
 
     //create backcround2
 
+    string bg2=s_cwd_images+"/back2.png";
+             // cout<<curpath<<endl;
+    //create surface for cursor
+              surface=IMG_Load(bg2.c_str());
+
+
     //create sdl texture
        SDL_Texture *bkgd2;
        //place surface info into the tesxture bkgd2;
@@ -114,7 +174,7 @@ cout<<"effectivly ran on linux"<<endl;
 
 
 
-       SDL_Rect bkgd2Pos;
+     //  SDL_Rect bkgd2Pos;
         //set xywand h for rect
         bkgd2Pos.x=0;
         bkgd2Pos.y=-768;
@@ -126,22 +186,16 @@ cout<<"effectivly ran on linux"<<endl;
 
     //create a rectangle xywh
 
-    SDL_Rect bkgd1Pos;
+    //SDL_Rect bkgd1Pos;
     //set xywand h for rect
     bkgd1Pos.x=0;
     bkgd1Pos.y=0;
     bkgd1Pos.w=1024;
     bkgd1Pos.h=768;
 
-    //set temp variables to hold movement
 
-    float bg1pos_x=0,bg1pos_y=0;
-    //set speed
-    int backspeed=100;
 
-    float bg2pos_x=0,bg2pos_y=-768;
-      //set speed
-      int backspeed2=100;
+
 
       //load path to cursor
 
@@ -164,12 +218,188 @@ cout<<"effectivly ran on linux"<<endl;
           curpos.h=50;
 
 
+///////***********menu start********////////////////
+     //******titles**********////////
+          string titl=s_cwd_images+"/title.png";
+                      // cout<<curpath<<endl;
+             //create surface for cursor
+                       surface=IMG_Load(titl.c_str());
 
-	//The surface contained by the window
-	//SDL_Surface* screenSurface = NULL;
 
-	//Get window surface
-	//screenSurface = SDL_GetWindowSurface( window );
+             //create sdl texture
+                SDL_Texture *title;
+                //place surface info into the tesxture bkgd2;
+                title=SDL_CreateTextureFromSurface(rend,surface);
+                SDL_Rect titlep;
+                         titlep.x=0;
+                         titlep.y=0;
+                         titlep.w=1024;
+                         titlep.h=200;
+
+                         SDL_FreeSurface(surface);
+                         /////*********title ends///
+
+
+                         ///******play one button*****/////
+
+                         string p1b=s_cwd_images+"/playonenorm.png";
+                                              // cout<<curpath<<endl;
+                                     //create surface for cursor
+                                               surface=IMG_Load(p1b.c_str());
+
+
+                                     //create sdl texture
+                                        SDL_Texture *p1bb;
+                                        //place surface info into the tesxture bkgd2;
+                                        p1bb=SDL_CreateTextureFromSurface(rend,surface);
+
+                                        SDL_Rect p1bp;
+                                                 p1bp.x=150;
+                                                 p1bp.y=300;
+                                                 p1bp.w=200;
+                                                 p1bp.h=100;
+
+                                                 SDL_FreeSurface(surface);
+                                                 ///play one over state
+                      string p1bo=s_cwd_images+"/olayeroneover.png";
+                                                                                              // cout<<curpath<<endl;
+                                                                                     //create surface for cursor
+                     surface=IMG_Load(p1bo.c_str());
+
+
+                                                                                     //create sdl texture
+             SDL_Texture *p1bbo;
+                                                                                        //place surface info into the tesxture bkgd2;
+         p1bbo=SDL_CreateTextureFromSurface(rend,surface);
+
+                                                                                  //      SDL_Rect p1bp;
+                                                                                        //         p1bp.x=150;
+                                                                                         //        p1bp.y=300;
+                                                                                         //        p1bp.w=200;
+                                                                                          //       p1bp.h=100;
+
+              SDL_FreeSurface(surface);
+
+
+
+
+                         ////****play one button ends******//////
+
+     //********************play two button begins***************************/////////////////////////////////
+
+        string p2b=s_cwd_images+"/twoplayernorm.png";
+
+          surface=IMG_Load(p2b.c_str());
+
+
+                SDL_Texture *p2bb;
+
+        p2bb=SDL_CreateTextureFromSurface(rend,surface);
+
+       SDL_Rect p2bp;
+     p2bp.x=150;
+     p2bp.y=450;
+     p2bp.w=200;
+     p2bp.h=100;
+
+   SDL_FreeSurface(surface);
+         ///play two over state
+    string p2bo=s_cwd_images+"/twoplayerover.png";
+                                                                                                                                                                                         ;
+
+surface=IMG_Load(p2bo.c_str());
+
+   SDL_Texture *p2bbo;
+                   //place surface info into the tesxture bkgd2;
+     p2bbo=SDL_CreateTextureFromSurface(rend,surface);
+
+  SDL_FreeSurface(surface);
+
+//end play two over button
+
+
+  ////////********instructions  button******************//////////////////
+
+//instruct normal
+  string ins=s_cwd_images+"/instructnorm.png";
+
+      surface=IMG_Load(ins.c_str());
+
+
+            SDL_Texture *insn;
+
+    insn=SDL_CreateTextureFromSurface(rend,surface);
+
+   SDL_Rect insnp;
+ insnp.x=500;
+ insnp.y=300;
+ insnp.w=200;
+ insnp.h=100;
+
+SDL_FreeSurface(surface);
+     ///instruct over
+string ino=s_cwd_images+"/instructover.png";
+                                                                                                                                                                                     ;
+
+surface=IMG_Load(ino.c_str());
+
+SDL_Texture *inso;
+               //place surface info into the tesxture bkgd2;
+ inso=SDL_CreateTextureFromSurface(rend,surface);
+
+SDL_FreeSurface(surface);
+
+
+
+
+
+
+
+  //////////***********instructions button end*********************///////
+
+
+/////*********quit button**********//////////////////////
+
+
+
+
+//quit normal
+  string quitn=s_cwd_images+"/quitnorm.png";
+
+      surface=IMG_Load(quitn.c_str());
+
+
+            SDL_Texture *qn;
+
+    qn=SDL_CreateTextureFromSurface(rend,surface);
+
+   SDL_Rect qnp;
+ qnp.x=500;
+ qnp.y=450;
+ qnp.w=200;
+ qnp.h=100;
+
+SDL_FreeSurface(surface);
+     ///quit  over
+string quito=s_cwd_images+"/quitover.png";
+                                                                                                                                                                                     ;
+
+surface=IMG_Load(quito.c_str());
+
+SDL_Texture *qo;
+               //place surface info into the tesxture bkgd2;
+ qo=SDL_CreateTextureFromSurface(rend,surface);
+
+SDL_FreeSurface(surface);
+
+
+
+
+
+/////********quit button ends***********//////
+
+
+
 
 	//set up game controller
 	SDL_GameController* gGameController=NULL;
@@ -216,6 +446,10 @@ cout<<"effectivly ran on linux"<<endl;
 			while (menu)
 			{
 
+
+
+				//cheack for input events
+
 				thistime=SDL_GetTicks();
 				deltatime=(float)(thistime-lasttime)/1000;
 				lasttime=thistime;
@@ -260,42 +494,24 @@ cout<<"effectivly ran on linux"<<endl;
 						break;
 					}
 				}
-				//update background one
 
-			 bg1pos_y +=(backspeed*1)*deltatime;
-
-			 //set the new back ground one pos
-			 bkgd1Pos.y=(int)( bg1pos_y+0.5f);
-
-			 //reset when off bottom the bottom of the screen
-			 if(bkgd1Pos.y>=768)
-			 {
-				bkgd1Pos.y=-768;
-				bg1pos_y=bkgd1Pos.y;
+				updatebackground();
 
 
-			 }
-
-			 bg2pos_y +=(backspeed2*1)*deltatime;
-
-					 //set the new back ground one pos
-					 bkgd2Pos.y=(int)( bg2pos_y+0.5f);
-
-					 //reset when off bottom the bottom of the screen
-					 if(bkgd2Pos.y>=768)
-					 {
-						bkgd2Pos.y=-768;
-						bg2pos_y=bkgd2Pos.y;
-
-
-					 }
 
 
 
 				SDL_RenderClear(rend);
-				//draw image
+				//draw imagebackground1
 				SDL_RenderCopy(rend,bkgd1,NULL,&bkgd1Pos);
 				SDL_RenderCopy(rend,bkgd2,NULL,&bkgd2Pos);
+				SDL_RenderCopy(rend,title,NULL,&titlep);
+				SDL_RenderCopy(rend,p1bb,NULL,&p1bp);//play one over state change p1bb to p1bbo
+				SDL_RenderCopy(rend,p2bb,NULL,&p2bp);//play two over state change p2bb to p2bbo
+				SDL_RenderCopy(rend,insn,NULL,&insnp);//instruct over state is inso
+				SDL_RenderCopy(rend,qn,NULL,&qnp);///quit over state is qo not qn
+
+
 				SDL_RenderCopy(rend,cur,NULL,&curpos);
 
 				SDL_RenderPresent(rend);
