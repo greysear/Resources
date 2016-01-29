@@ -7,7 +7,15 @@
 #if defined(_WIN32)||(_WIN64)
 
 #include "SDL.h"
+#include "SDL_image.h"
 
+
+
+#endif
+
+#if defined(_WIN32)||(_WIN64)
+#include <direct.h>
+#define getcwd _getcwd
 #endif
 
 #if defined(__APPLE__)
@@ -21,16 +29,22 @@
 
 #include "SDL2/SDL.h"
 
+
 #endif
 
 
 
 #include <stdio.h>
+
 #include <iostream>
+
 using namespace std;
+
 float deltatime=0.0;
 int thistime=0;
 int lasttime;
+
+bool menu, instruction, play1, players2, Win, Lose, quit;
 
    //set speed
    int backspeed=100;
@@ -59,9 +73,8 @@ void updatebackground()
 			 //reset when off bottom the bottom of the screen
 			 if(bkgd1Pos.y>=768)
 			 {
-				bkgd1Pos.y=-768;
-				bg1pos_y=bkgd1Pos.y;
-
+					bkgd1Pos.y=-768;
+										bg1pos_y=bkgd1Pos.y;
 
 			 }
 
@@ -94,19 +107,25 @@ int main(int argc, char* argv[]) {
 
 cout<< "Running on windows  "<<endl;
 
+string currentworkingdirectory(getcwd(NULL, 0));
+
+//create string lincking pc image folder
+
+string images_dir = currentworkingdirectory + "\\Resources\\images";
+
 #endif
 
 #if defined(__APPLE__)
 
 cout<<"running on mac"<<endl;
 //get current working dir
-string s_cwd(getcwd(NULL,0));
+string currentworkingdirectory(getcwd(NULL,0));
 
 //create string lincing mac image folder
 
-string s_cwd_images = s_cwd +"/Resources/images";
+string images_dir = currentworkingdirectory +"/Resources/images";
 //test
-cout<<s_cwd_images<<endl;
+cout<<images_dir<<endl;
 
 #endif
 
@@ -114,6 +133,15 @@ cout<<s_cwd_images<<endl;
 
 cout<<"running on linux"<<endl;
 cout<<"effectivly ran on linux"<<endl;
+
+
+//get current working dir
+string currentworkingdirectory(getcwd(NULL,0));
+
+//create string lincing mac image folder
+
+string images_dir = currentworkingdirectory +"/Resources/images";
+
 
 #endif
 
@@ -144,8 +172,9 @@ cout<<"effectivly ran on linux"<<endl;
     //create the renderer
     rend=SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
 
-    string BKGDpath=s_cwd_images+"/back1.png";
-    cout<<BKGDpath<<endl;
+    string BKGDpath=images_dir +"/back1.png";
+  //
+	cout << BKGDpath<<endl;
 
     SDL_Surface *surface=IMG_Load(BKGDpath.c_str());
 
@@ -159,7 +188,7 @@ cout<<"effectivly ran on linux"<<endl;
 
     //create backcround2
 
-    string bg2=s_cwd_images+"/back2.png";
+    string bg2=images_dir +"/back2.png";
              // cout<<curpath<<endl;
     //create surface for cursor
               surface=IMG_Load(bg2.c_str());
@@ -199,8 +228,8 @@ cout<<"effectivly ran on linux"<<endl;
 
       //load path to cursor
 
-      string curpath=s_cwd_images+"/cursor.png";
-          cout<<curpath<<endl;
+      string curpath=images_dir+"/cursor.png";
+          //cout<<curpath<<endl;
 //create surface for cursor
           surface=IMG_Load(curpath.c_str());
 
@@ -220,7 +249,7 @@ cout<<"effectivly ran on linux"<<endl;
 
 ///////***********menu start********////////////////
      //******titles**********////////
-          string titl=s_cwd_images+"/title.png";
+          string titl=images_dir +"/title.png";
                       // cout<<curpath<<endl;
              //create surface for cursor
                        surface=IMG_Load(titl.c_str());
@@ -242,7 +271,7 @@ cout<<"effectivly ran on linux"<<endl;
 
                          ///******play one button*****/////
 
-                         string p1b=s_cwd_images+"/playonenorm.png";
+                         string p1b=images_dir+"/playonenorm.png";
                                               // cout<<curpath<<endl;
                                      //create surface for cursor
                                                surface=IMG_Load(p1b.c_str());
@@ -261,7 +290,7 @@ cout<<"effectivly ran on linux"<<endl;
 
                                                  SDL_FreeSurface(surface);
                                                  ///play one over state
-                      string p1bo=s_cwd_images+"/olayeroneover.png";
+                      string p1bo=images_dir +"/olayeroneover.png";
                                                                                               // cout<<curpath<<endl;
                                                                                      //create surface for cursor
                      surface=IMG_Load(p1bo.c_str());
@@ -287,7 +316,7 @@ cout<<"effectivly ran on linux"<<endl;
 
      //********************play two button begins***************************/////////////////////////////////
 
-        string p2b=s_cwd_images+"/twoplayernorm.png";
+        string p2b=images_dir+"/twoplayernorm.png";
 
           surface=IMG_Load(p2b.c_str());
 
@@ -304,7 +333,7 @@ cout<<"effectivly ran on linux"<<endl;
 
    SDL_FreeSurface(surface);
          ///play two over state
-    string p2bo=s_cwd_images+"/twoplayerover.png";
+    string p2bo=images_dir +"/twoplayerover.png";
                                                                                                                                                                                          ;
 
 surface=IMG_Load(p2bo.c_str());
@@ -321,7 +350,7 @@ surface=IMG_Load(p2bo.c_str());
   ////////********instructions  button******************//////////////////
 
 //instruct normal
-  string ins=s_cwd_images+"/instructnorm.png";
+  string ins=images_dir+"/instructnorm.png";
 
       surface=IMG_Load(ins.c_str());
 
@@ -338,7 +367,7 @@ surface=IMG_Load(p2bo.c_str());
 
 SDL_FreeSurface(surface);
      ///instruct over
-string ino=s_cwd_images+"/instructover.png";
+string ino=images_dir+"/instructover.png";
                                                                                                                                                                                      ;
 
 surface=IMG_Load(ino.c_str());
@@ -364,7 +393,7 @@ SDL_FreeSurface(surface);
 
 
 //quit normal
-  string quitn=s_cwd_images+"/quitnorm.png";
+  string quitn=images_dir+"/quitnorm.png";
 
       surface=IMG_Load(quitn.c_str());
 
@@ -381,7 +410,7 @@ SDL_FreeSurface(surface);
 
 SDL_FreeSurface(surface);
      ///quit  over
-string quito=s_cwd_images+"/quitover.png";
+string quito=images_dir+"/quitover.png";
                                                                                                                                                                                      ;
 
 surface=IMG_Load(quito.c_str());
@@ -397,6 +426,182 @@ SDL_FreeSurface(surface);
 
 
 /////********quit button ends***********//////
+
+///***********Instuction screen************///////////
+
+
+
+string ititl = images_dir + "/instruct.png";
+// cout<<curpath<<endl;
+//create surface for cursor
+surface = IMG_Load(ititl.c_str());
+
+
+//create sdl texture
+SDL_Texture *ititle;
+//place surface info into the tesxture bkgd2;
+ititle = SDL_CreateTextureFromSurface(rend, surface);
+SDL_Rect ititlep;
+ititlep.x = 0;
+ititlep.y = 200;
+ititlep.w = 1024;
+ititlep.h = 200;
+
+SDL_FreeSurface(surface);
+//********mainmenubutton*************////
+
+string memn = images_dir + "/mainmenunorm.png";
+
+surface = IMG_Load(memn.c_str());
+
+
+SDL_Texture *memun;
+
+memun = SDL_CreateTextureFromSurface(rend, surface);
+
+SDL_Rect memunp;
+memunp.x = 500;
+memunp.y = 450;
+memunp.w = 200;
+memunp.h = 100;
+
+SDL_FreeSurface(surface);
+///menu  over
+string memuo = images_dir + "/mainmenuover.png";
+;
+
+surface = IMG_Load(memuo.c_str());
+
+SDL_Texture *memo;
+//place surface info into the tesxture bkgd2;
+memo = SDL_CreateTextureFromSurface(rend, surface);
+
+SDL_FreeSurface(surface);
+
+
+
+
+///************Instruction screen ends************////////////
+
+///************ one player***************/////////////////////
+
+
+string ptitl = images_dir + "/playerone!.png";
+// cout<<curpath<<endl;
+//create surface for cursor
+surface = IMG_Load(ptitl.c_str());
+
+
+//create sdl texture
+SDL_Texture *ptitle;
+//place surface info into the tesxture bkgd2;
+ptitle = SDL_CreateTextureFromSurface(rend, surface);
+SDL_Rect ptitlep;
+ptitlep.x = 0;
+ptitlep.y = 200;
+ptitlep.w = 1024;
+ptitlep.h = 200;
+
+
+
+//**************oneplayerends****************/////////////////
+
+
+//************playertwoscreen******************///////////////
+
+
+string p2titl = images_dir + "/twoplayert.png";
+// cout<<curpath<<endl;
+//create surface for cursor
+surface = IMG_Load(p2titl.c_str());
+
+
+//create sdl texture
+SDL_Texture *p2title;
+//place surface info into the tesxture bkgd2;
+p2title = SDL_CreateTextureFromSurface(rend, surface);
+SDL_Rect p2titlep;
+p2titlep.x = 0;
+p2titlep.y = 200;
+p2titlep.w = 1024;
+p2titlep.h = 200;
+
+
+
+
+
+
+//************playertwoscreenends******************///////////////
+/// ********************WIN SCREEN***************/////////////
+
+string wtitl = images_dir + "/win.png";
+// cout<<curpath<<endl;
+//create surface for cursor
+surface = IMG_Load(wtitl.c_str());
+
+
+//create sdl texture
+SDL_Texture *wtitle;
+//place surface info into the tesxture bkgd2;
+wtitle = SDL_CreateTextureFromSurface(rend, surface);
+
+SDL_FreeSurface(surface);
+
+string plagn = images_dir + "/playagain.png";
+
+surface = IMG_Load(plagn.c_str());
+
+
+SDL_Texture *playn;
+
+playn = SDL_CreateTextureFromSurface(rend, surface);
+
+SDL_Rect playnp;
+playnp.x = 200;
+playnp.y = 650;
+playnp.w = 200;
+playnp.h = 100;
+
+SDL_FreeSurface(surface);
+
+string plago = images_dir + "/playagainover.png";
+
+surface = IMG_Load(plago.c_str());
+
+
+SDL_Texture *playo;
+
+playo = SDL_CreateTextureFromSurface(rend, surface);
+
+SDL_FreeSurface(surface);
+
+/// ********************WIN SCREEN end***************/////////////
+
+
+///****loseScreen***********//////////////////////
+
+
+
+string ltitl = images_dir + "/losetitle.png";
+// cout<<curpath<<endl;
+//create surface for cursor
+surface = IMG_Load(ltitl.c_str());
+
+
+//create sdl texture
+SDL_Texture *ltitle;
+//place surface info into the tesxture bkgd2;
+ltitle = SDL_CreateTextureFromSurface(rend, surface);
+
+SDL_FreeSurface(surface);
+
+
+
+
+///****loseScreen***********//////////////////////
+
+
+
 
 
 
@@ -418,7 +623,7 @@ SDL_FreeSurface(surface);
 	//set up initial state
 	GameState gamestate=MENU;
 	//bool values to controll movement through states
-	bool menu,instruction,play1,players2,Win,Lose,quit;
+	
 
 
 
@@ -530,6 +735,11 @@ SDL_FreeSurface(surface);
 
 					while (instruction)
 					{
+
+
+						thistime=SDL_GetTicks();
+										deltatime=(float)(thistime-lasttime)/1000;
+										lasttime=thistime;
 						//cheack for input events
 						if(SDL_PollEvent(&event))
 						{
@@ -558,6 +768,21 @@ SDL_FreeSurface(surface);
 							}
 						}
 
+						updatebackground();
+
+						SDL_RenderClear(rend);
+						//draw imagebackground1
+						SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
+						SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
+						SDL_RenderCopy(rend, title, NULL, &titlep);
+						SDL_RenderCopy(rend, ititle, NULL, &ititlep);
+						SDL_RenderCopy(rend, memo, NULL, &memunp);//menu overstate memuo
+
+
+
+						SDL_RenderCopy(rend, cur, NULL, &curpos);
+						SDL_RenderPresent(rend);
+
 					}
 					break;//end instructions case
 
@@ -572,6 +797,9 @@ SDL_FreeSurface(surface);
 
 							while (play1)
 							{
+								thistime=SDL_GetTicks();
+												deltatime=(float)(thistime-lasttime)/1000;
+												lasttime=thistime;
 								//cheack for input events
 								if(SDL_PollEvent(&event))
 								{
@@ -605,6 +833,21 @@ SDL_FreeSurface(surface);
 									}
 								}
 
+								updatebackground();
+
+								SDL_RenderClear(rend);
+								//draw imagebackground1
+								SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
+								SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
+								SDL_RenderCopy(rend, title, NULL, &titlep);
+								SDL_RenderCopy(rend, ptitle, NULL, &ptitlep);
+								SDL_RenderCopy(rend, memun, NULL, &memunp);//menu overstate memuo
+
+
+
+								SDL_RenderCopy(rend, cur, NULL, &curpos);
+								SDL_RenderPresent(rend);
+
 							}
 							break;//end play1
 
@@ -620,6 +863,9 @@ SDL_FreeSurface(surface);
 
 							while (players2)
 							{
+								thistime=SDL_GetTicks();
+												deltatime=(float)(thistime-lasttime)/1000;
+												lasttime=thistime;
 								//cheack for input events
 								if(SDL_PollEvent(&event))
 								{
@@ -652,6 +898,19 @@ SDL_FreeSurface(surface);
 										break;
 									}
 								}
+								updatebackground();
+
+								SDL_RenderClear(rend);
+								SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
+								SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
+								SDL_RenderCopy(rend, title, NULL, &titlep);
+								SDL_RenderCopy(rend, p2title, NULL, &ptitlep);
+								SDL_RenderCopy(rend, playn, NULL, &playnp);//playo overstate memuo
+
+
+
+								SDL_RenderCopy(rend, cur, NULL, &curpos);
+								SDL_RenderPresent(rend);
 
 							}
 							break;//end play2
@@ -670,6 +929,9 @@ SDL_FreeSurface(surface);
 
 							while (Win)
 							{
+								thistime=SDL_GetTicks();
+												deltatime=(float)(thistime-lasttime)/1000;
+												lasttime=thistime;
 								//cheack for input events
 								if(SDL_PollEvent(&event))
 								{
@@ -703,6 +965,21 @@ SDL_FreeSurface(surface);
 									}
 								}
 
+
+								updatebackground();
+
+								SDL_RenderClear(rend);
+								SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
+								SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
+								SDL_RenderCopy(rend, title, NULL, &titlep);
+								SDL_RenderCopy(rend, wtitle, NULL, &ptitlep);
+								SDL_RenderCopy(rend, playn, NULL, &playnp);//playo overstate memuo
+
+
+
+								SDL_RenderCopy(rend, cur, NULL, &curpos);
+								SDL_RenderPresent(rend);
+
 							}
 							break;//end play2
 
@@ -719,6 +996,10 @@ SDL_FreeSurface(surface);
 
 							while (Lose)
 							{
+
+								thistime=SDL_GetTicks();
+												deltatime=(float)(thistime-lasttime)/1000;
+												lasttime=thistime;
 								//cheack for input events
 								if(SDL_PollEvent(&event))
 								{
@@ -751,6 +1032,21 @@ SDL_FreeSurface(surface);
 										break;
 									}
 								}
+
+								updatebackground();
+
+								SDL_RenderClear(rend);
+								SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
+								SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
+								SDL_RenderCopy(rend, title, NULL, &titlep);
+								SDL_RenderCopy(rend, ltitle, NULL, &ptitlep);
+								SDL_RenderCopy(rend, playn, NULL, &playnp);//playo overstate memuo
+								SDL_RenderCopy(rend, qn, NULL, &qnp);
+
+
+
+								SDL_RenderCopy(rend, cur, NULL, &curpos);
+								SDL_RenderPresent(rend);
 
 							}
 							break;//end play2
