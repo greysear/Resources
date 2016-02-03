@@ -65,8 +65,9 @@ int backspeed = 100;
 
 //set speed
 int backspeed2 = 100;
-
-
+/////***************bool to cheak if mouse is over a button**********/////
+bool play1over=false,play2over=false,instructover=false,menuover=false,quitover=false;
+bool playaginover=false;
 //sdl rect pos bg1 and 2
 
 SDL_Rect bkgd1Pos, bkgd2Pos;
@@ -74,7 +75,7 @@ SDL_Rect bkgd1Pos, bkgd2Pos;
 float bg1pos_x = 0, bg1pos_y = 0;
 float bg2pos_x = 0, bg2pos_y = -768;
 //move background
-void updatebackground()
+void updatebackground(float deltatime)
 {
 	//update background one
 
@@ -112,9 +113,6 @@ void moveCursor(const SDL_ControllerAxisEvent event)
 	//cheack if stick =0
 	if(event.which==0)
 	{
-
-
-	}
 	//cheak x axis
 	if(event.axis==0)
 	{
@@ -146,7 +144,7 @@ void moveCursor(const SDL_ControllerAxisEvent event)
 						}
 
 	}
-
+	}
 }
 //update cursor on screen
 void updatecursor(float deltaTime)
@@ -161,6 +159,12 @@ void updatecursor(float deltaTime)
 
 	activpos.x=curpos.x;
 	activpos.y=curpos.y;
+
+	if(curpos.x<0)
+	{
+		curpos.x=0;
+		posX=curpos.x;
+	}
 
 	if(curpos.x>1024-curpos.w)
 	{
@@ -221,7 +225,7 @@ int main(int argc, char* argv[]) {
 
 	string currentworkingdirectory(getcwd(NULL, 0));
 
-	//create string lincing mac image folder
+	//create string lincking mac image folder
 
 	string images_dir = currentworkingdirectory + "/Resources/images";
 	
@@ -338,6 +342,12 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 	curpos.w = 50;
 	curpos.h = 50;
 
+
+
+	activpos.x=curpos.x;
+	activpos.y=curpos.y+1;
+	activpos.w=10;
+	activpos.h=10;
 
 
 
@@ -738,10 +748,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 			menu = true;
 
 			cout << "the game state is menu" << endl;
-			cout << "press A button for instructions" << endl;
-			cout << " B for one player" << endl;
-			cout << " x button for 2 player" << endl;
-			cout << " y button for quit" << endl;
+			cout<< "press the a button to  make a selection"<<endl;
 
 			while (menu)
 			{
@@ -772,11 +779,11 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 						{
 							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
 							{
-								if(players1over)
+								if(play1over)
 								{
 									menu=false;
 									gamestate=Playone;
-									players1over=false;
+									play1over=false;
 								}
 
 								if(play2over)
@@ -785,7 +792,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 									menu=false;
 									play2over=false;
 								}
-								if(intructover)
+								if(instructover)
 								{
 								gamestate = instruct;
 								menu=false;
@@ -798,21 +805,25 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 								}
 
 										}break;
+
 					case SDL_CONTROLLERAXISMOTION:
-																				moveCursor(event.caxis);
-																				break;
+						moveCursor(event.caxis);
+							break;
 
 						}
 
 
 					}
+////////***************menu update//////****************
 
-
-				updatebackground();
+				updatebackground(deltatime);
 
 				updatecursor(deltatime);
 
-
+ play1over=SDL_HasIntersection(&activpos,&p1bp);
+ play2over=SDL_HasIntersection(&activpos,&p2bp);
+ instructover=SDL_HasIntersection(&activpos,&insnp);
+ quitover=SDL_HasIntersection(&activpos,&qnp);
 
 
 
@@ -821,11 +832,41 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 				SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
 				SDL_RenderCopy(rend, title, NULL, &titlep);
-				SDL_RenderCopy(rend, p1bb, NULL, &p1bp);//play one over state change p1bb to p1bbo
-				SDL_RenderCopy(rend, p2bb, NULL, &p2bp);//play two over state change p2bb to p2bbo
-				SDL_RenderCopy(rend, insn, NULL, &insnp);//instruct over state is inso
-				SDL_RenderCopy(rend, qn, NULL, &qnp);///quit over state is qo not qn
 
+				//////////***************logic for button states*********//////////
+				if(play1over)
+				{
+				SDL_RenderCopy(rend, p1bbo, NULL, &p1bp);
+				}else
+				{
+					SDL_RenderCopy(rend, p1bb, NULL, &p1bp);
+				}
+				if(play2over)
+				{
+				SDL_RenderCopy(rend, p2bbo, NULL, &p2bp);
+
+				}else
+				{
+
+					SDL_RenderCopy(rend, p2bb, NULL, &p2bp);
+
+				}
+				if(instructover)
+				{
+				SDL_RenderCopy(rend, inso, NULL, &insnp);
+				}else
+				{
+					SDL_RenderCopy(rend, insn, NULL, &insnp);
+				}
+				if(quitover)
+				{
+
+				SDL_RenderCopy(rend, qo, NULL, &qnp);
+				}else
+				{
+					SDL_RenderCopy(rend, qn, NULL, &qnp);
+				}
+				//////////***************logic for button states ends*********//////////
 
 				SDL_RenderCopy(rend, cur, NULL, &curpos);
 
@@ -877,9 +918,20 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 						break;
 
 
+
+					case SDL_CONTROLLERAXISMOTION:
+											moveCursor(event.caxis);
+												break;
+
+
+
 				}
 
-				updatebackground();
+				updatebackground(deltatime);
+
+				//cheack cursor over menu button
+
+				menuover=SDL_HasIntersection(&activpos,&memunp);
 
 				SDL_RenderClear(rend);
 				//draw imagebackground1
@@ -887,7 +939,17 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
 				SDL_RenderCopy(rend, title, NULL, &titlep);
 				SDL_RenderCopy(rend, ititle, NULL, &ititlep);
-				SDL_RenderCopy(rend, memo, NULL, &memunp);//menu overstate memuo
+
+				if(menuover)
+				{
+
+					SDL_RenderCopy(rend, memo, NULL, &memunp)
+
+				}else
+				{
+
+				SDL_RenderCopy(rend, memn, NULL, &memunp);//menu overstate memuo
+				}
 
 
 
@@ -944,7 +1006,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 					}
 				}
 
-				updatebackground();
+				updatebackground(deltatime);
 
 				SDL_RenderClear(rend);
 				//draw imagebackground1
@@ -952,7 +1014,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
 				SDL_RenderCopy(rend, title, NULL, &titlep);
 				SDL_RenderCopy(rend, ptitle, NULL, &ptitlep);
-				SDL_RenderCopy(rend, memun, NULL, &memunp);//menu overstate memuo
+
 
 
 
@@ -1009,14 +1071,14 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 						break;
 					}
 				}
-				updatebackground();
+				updatebackground(deltatime);
 
 				SDL_RenderClear(rend);
 				SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
 				SDL_RenderCopy(rend, title, NULL, &titlep);
 				SDL_RenderCopy(rend, p2title, NULL, &ptitlep);
-				SDL_RenderCopy(rend, playn, NULL, &playnp);//playo overstate memuo
+
 
 
 
@@ -1077,7 +1139,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 				}
 
 
-				updatebackground();
+				updatebackground(deltatime);
 
 				SDL_RenderClear(rend);
 				SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
@@ -1144,7 +1206,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 					}
 				}
 
-				updatebackground();
+				updatebackground(deltatime);
 
 				SDL_RenderClear(rend);
 				SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
