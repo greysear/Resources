@@ -267,7 +267,7 @@ int main(int argc, char* argv[]) {
 
 	//create the renderer
 	rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
+//Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 	string BKGDpath = images_dir + "/back1.png";
 	//
 	//cout << BKGDpath<<endl;
@@ -881,7 +881,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 			instruction = true;
 
 			cout << "the game state is insrtructions" << endl;
-			cout << "press A button for main menu" << endl;
+
 			cout << endl;
 
 			while (instruction)
@@ -910,8 +910,13 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 						{
 							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
 							{
+								if(menuover)
+								{
+
 								instruction = false;
 								gamestate = MENU;
+								menuover=false;
+								}
 							}
 
 						}
@@ -920,14 +925,17 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 
 
 					case SDL_CONTROLLERAXISMOTION:
-											moveCursor(event.caxis);
-												break;
+					     moveCursor(event.caxis);
+					       break;
 
-
+					}
 
 				}
 
 				updatebackground(deltatime);
+
+				updatecursor(deltatime);
+
 
 				//cheack cursor over menu button
 
@@ -943,12 +951,12 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 				if(menuover)
 				{
 
-					SDL_RenderCopy(rend, memo, NULL, &memunp)
+					SDL_RenderCopy(rend, memo, NULL, &memunp);
 
 				}else
 				{
 
-				SDL_RenderCopy(rend, memn, NULL, &memunp);//menu overstate memuo
+				SDL_RenderCopy(rend, memun, NULL, &memunp);//menu overstate memuo
 				}
 
 
@@ -1124,29 +1132,67 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 						{
 							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
 							{
-								Win = false;
-								gamestate = MENU;
+
+							  if(play1over)
+							  {
+								  Win = false;
+								gamestate = Playone;
+								play1over=false;
+
 							}
-							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
-							{
-								Win = false;
-								quit = true;
-							}
+							  if(menuover)
+							  {
+								  Win=false;
+								  gamestate=MENU;
+								  menuover=false;
+							  }
 
 						}
 						break;
+
+
+					case SDL_CONTROLLERAXISMOTION:
+					     moveCursor(event.caxis);
+					       break;
+
 					}
 				}
 
-
+				}
 				updatebackground(deltatime);
+
+				updatecursor(deltatime);
+
+				menuover=SDL_HasIntersection(&activpos,&memunp);
+				play1over=SDL_HasIntersection(&activpos,&playnp);
+
+
 
 				SDL_RenderClear(rend);
 				SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
 				SDL_RenderCopy(rend, title, NULL, &titlep);
 				SDL_RenderCopy(rend, wtitle, NULL, &ptitlep);
-				SDL_RenderCopy(rend, playn, NULL, &playnp);//playo overstate memuo
+				//playo
+
+				if(menuover)
+							{
+
+								SDL_RenderCopy(rend, memo, NULL, &memunp);
+
+							}else
+							{
+
+							SDL_RenderCopy(rend, memun, NULL, &memunp);//menu overstate memuo
+							}
+
+				if(play1over)
+				{
+					SDL_RenderCopy(rend, playo, NULL, &playnp);
+				}else
+				{
+					SDL_RenderCopy(rend, playn, NULL, &playnp);
+				}
 
 
 
@@ -1163,8 +1209,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 			Lose = true;
 
 			cout << "the game state is lose" << endl;
-			cout << "press A button for menu" << endl;
-			cout << "press B for quit" << endl;
+
 			cout << endl;
 
 			while (Lose)
@@ -1192,29 +1237,64 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 						{
 							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
 							{
-								Lose = false;
-								gamestate = MENU;
-							}
-							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
-							{
-								Lose = false;
-								quit = true;
+								if(play1over)
+														  {
+															  Win = false;
+															gamestate = Playone;
+															play1over=false;
+
+														}
+														  if(menuover)
+														  {
+															  Win=false;
+															  gamestate=MENU;
+															  menuover=false;
+														  }
+
 							}
 
 						}
 						break;
+					case SDL_CONTROLLERAXISMOTION:
+										     moveCursor(event.caxis);
+										       break;
 					}
 				}
 
 				updatebackground(deltatime);
+
+				updatecursor(deltatime);
+
+								menuover=SDL_HasIntersection(&activpos,&memunp);
+								play1over=SDL_HasIntersection(&activpos,&playnp);
+
+
 
 				SDL_RenderClear(rend);
 				SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
 				SDL_RenderCopy(rend, title, NULL, &titlep);
 				SDL_RenderCopy(rend, ltitle, NULL, &ptitlep);
-				SDL_RenderCopy(rend, playn, NULL, &playnp);//playo overstate memuo
-				SDL_RenderCopy(rend, qn, NULL, &qnp);
+
+				if(menuover)
+											{
+
+												SDL_RenderCopy(rend, memo, NULL, &memunp);
+
+											}else
+											{
+
+											SDL_RenderCopy(rend, memun, NULL, &memunp);//menu overstate memuo
+											}
+
+								if(play1over)
+								{
+									SDL_RenderCopy(rend, playo, NULL, &playnp);
+								}else
+								{
+									SDL_RenderCopy(rend, playn, NULL, &playnp);
+								}
+
 
 
 
@@ -1227,6 +1307,7 @@ Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
 
 
 		}
+	}
 	}
 
 	// SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example

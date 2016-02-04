@@ -28,7 +28,7 @@
 
 
 #include <stdio.h>
-
+#include <string>
 #include <iostream>
 
 using namespace std;
@@ -52,17 +52,22 @@ public:
 
 	float posX,PosY;
 
-	Player(SDL_Render*rend,int pnum,string filepath,float x,float y);
+	Player(SDL_Renderer *rend,int pnum,string filepath,float x,float y);
 
-	void update(float deltatime);
 
-	void draw(SDL_Renderer*rend);
+
+
 
 	//get joystick axis
 	void oncontrolleraxis(const SDL_ControllerAxisEvent event);
 
 	//get button events
 	void oncontrollerbutton(const SDL_ControllerButtonEvent event);
+
+
+
+	void update(float deltatime);
+	void draw(SDL_Renderer*rend);
 	//destroy player
 
 	~Player();

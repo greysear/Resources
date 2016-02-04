@@ -17,21 +17,29 @@ Player::Player(SDL_Renderer*rend,int pnum,string filepath,float x,float y)
 
 	if(playnum==0)
 	{
-		playerpath=filepath;
+		playpath=filepath + "player1.png";
 
 
 	}else{
-		Playerpath=filepath;
+		playpath=filepath+ "player2.png";
 
 
 	}
-	surface=img_load(playerPath.c_str());
+	surface = IMG_Load(playpath.c_str());
+
+	texture=SDL_CreateTextureFromSurface(rend,surface);
+
+	SDL_FreeSurface(surface);
 
 	posRect.x=x;
 	posRect.y=y;
+	int w,h;
+	SDL_QueryTexture(texture,NULL,NULL,&w,&h);
+	posRect.w=w;
+	posRect.h=h;
 	//set movement floats to players original x&&y
-	pos_x=x;
-	pos_Y=y;
+	posX=x;
+	PosY=y;
 	//set direction of joystick
 	xDir=0;
 	yDir=0;
@@ -40,11 +48,11 @@ Player::Player(SDL_Renderer*rend,int pnum,string filepath,float x,float y)
 
 
 }
-
+/*
 void oncontrolleraxis(const SDL_ControllerAxisEvent event)
 {
 	//cheack if stick =0
-		if(event.which==0&& playnum==0)
+		if(event.which==0&&playnum==0)
 		{
 
 
@@ -84,33 +92,49 @@ void oncontrolleraxis(const SDL_ControllerAxisEvent event)
 
 
 }
+
+*/
 void Player::update(float deltatime)
 {
 
-	posRect.y=(int)(pos_Y)+0.5f);
+
+	posX+=(Speed *xDir)*deltatime;
+	PosY+=(Speed *xDir)*deltatime;
+
+	posRect.x=(int)(posX+0.5f);
+	posRect.y=(int)(PosY+0.5f);
+
 	if(posRect.x<0)
 	{
-		PosRect.x=0;
-		pos_X=posRect.x;
+		posRect.x=0;
+
+		posX=posRect.x;
 	}
 	if(posRect.x>1024-posRect.w)
 	{
-		posRect.x=1024-posrect.w;
-		Posx=posRect.x;
+		posRect.x=1024-posRect.w;
+
+		posX=posRect.x;
 	}
 	if(posRect.y<0)
 	{
 		posRect.y=0;
-		posY=posRect.y;
 
+		PosY=posRect.y;
+
+	}
+	if(posRect.y>768-posRect.h)
+	{
+		posRect.y=768*posRect.h;
+		PosY=posRect.y;
 	}
 
 
 }
 
-void Player::draw(SDL_Rendere*rend)
+void Player::draw(SDL_Renderer*rend)
 {
-	SDL_RenderCopy(renderer,texture,NULLm&posRect);
+	SDL_RenderCopy(rend,texture,NULL,&posRect);
 }
 
 
