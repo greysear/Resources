@@ -10,6 +10,7 @@ main.cpp
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_mixer.h"
 
 
 
@@ -24,6 +25,8 @@ main.cpp
 
 #include "SDL2/SDL.h"
 #include "SDL2_image/SDL_image.h"
+#include "SDL2_mixer/SDL_mixer.h"
+
 
 #endif
 
@@ -31,6 +34,8 @@ main.cpp
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
+#include "SDL2/SDL_mixer.h"
+
 
 #endif
 #if defined(__linux__)
@@ -201,6 +206,7 @@ int main(int argc, char* argv[]) {
 	//create string lincking pc image folder
 
 	string images_dir = currentworkingdirectory + "\\Resources\\images";
+	string audio_dir = currentworkingdirectory + "\\Resources\\audio";
 
 #endif
 
@@ -214,7 +220,8 @@ int main(int argc, char* argv[]) {
 
 	string images_dir = currentworkingdirectory + "/Resources/images";
 	//test
-	cout << images_dir << endl;
+
+	string audio_dir=currentworkingdirectory+"/Resources/audio/";
 
 #endif
 
@@ -229,14 +236,9 @@ int main(int argc, char* argv[]) {
 
 	string images_dir = currentworkingdirectory + "/Resources/images";
 	
+	string audio_dir = currentworkingdirectory + "/Resources/audio";
 
 
-	//get current working dir
-	string currentworkingdirectory(getcwd(NULL, 0));
-
-	//create string lincing mac image folder
-
-	string images_dir = currentworkingdirectory + "/Resources/images";
 
 
 #endif
@@ -267,7 +269,10 @@ int main(int argc, char* argv[]) {
 
 	//create the renderer
 	rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-//Player player1=Player(renderer,0,images_dir.c_str(,250.0,500.0);
+
+	Player Player1 = Player(rend,0,images_dir.c_str(),250.0,500.0);
+	Player Player2 = Player(rend, 1, images_dir.c_str(), 750.0, 500.0);
+
 	string BKGDpath = images_dir + "/back1.png";
 	//
 	//cout << BKGDpath<<endl;
@@ -705,25 +710,45 @@ int main(int argc, char* argv[]) {
 
 	///****loseScreen***********//////////////////////
 
+///******
 
 
+	
 
-
-
-
-	//set up game controller
-	SDL_GameController* gGameController = NULL;
-
-	//****** open game controller up
-	gGameController = SDL_GameControllerOpen(0);
+	
+	
 	//turn on game controller events
 	SDL_GameControllerEventState(SDL_ENABLE);
+	//set up game controller
+	SDL_GameController* gGameController0 = NULL;
+	//****** open game controller up
+	gGameController0 = SDL_GameControllerOpen(0);
+
+
+	//set up game controller2
+	//turn on game controller events
+
+	//set up game controller
+	SDL_GameController* gGameController1 = NULL;
+	//****** open game controller up
+	gGameController1 = SDL_GameControllerOpen(1);
 
 	//SDL event to handle input
 
 	SDL_Event event;
 	//***set up variable for game states
 	enum GameState { MENU, instruct, Playone, play2, win, lose };
+
+	Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,2048);
+	Mix_Music *bgn=Mix_LoadMUS((audio_dir+"Theyre-Closing-In.mp3").c_str());
+
+	if(!Mix_PlayingMusic())
+		Mix_PlayMusic(bgn,-1);
+
+	Mix_Chunk *oversound=Mix_LoadWAV((audio_dir+"over.wav").c_str());
+	Mix_Chunk *pressedsound=Mix_LoadWAV((audio_dir+"pressed.wav").c_str());
+	bool alreadyover=false;
+
 
 	//set up initial state
 	GameState gamestate = MENU;
@@ -747,8 +772,6 @@ int main(int argc, char* argv[]) {
 
 			menu = true;
 
-			cout << "the game state is menu" << endl;
-			cout<< "press the a button to  make a selection"<<endl;
 
 			while (menu)
 			{
@@ -814,6 +837,7 @@ int main(int argc, char* argv[]) {
 
 
 					}
+				}
 ////////***************menu update//////****************
 
 				updatebackground(deltatime);
@@ -872,7 +896,8 @@ int main(int argc, char* argv[]) {
 
 				SDL_RenderPresent(rend);
 
-		}
+
+			}
 			break;
 
 			//case two begins
@@ -880,9 +905,7 @@ int main(int argc, char* argv[]) {
 
 			instruction = true;
 
-			cout << "the game state is insrtructions" << endl;
-
-			cout << endl;
+		
 
 			while (instruction)
 			{
@@ -971,10 +994,7 @@ int main(int argc, char* argv[]) {
 
 			play1 = true;
 
-			cout << "the game state is play1" << endl;
-			cout << "press A button for win" << endl;
-			cout << "press B for lose" << endl;
-			cout << endl;
+
 
 			while (play1)
 			{
@@ -998,35 +1018,42 @@ int main(int argc, char* argv[]) {
 
 						if (event.cdevice.which == 0)
 						{
-							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
+							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
 							{
 								play1 = false;
 								gamestate = win;
 							}
-							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
+							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_Y)
 							{
 								play1 = false;
 								gamestate = lose;
 							}
+							Player1.oncontrollerbutton(event.cbutton);
 
 						}
+						break;
+					case SDL_CONTROLLERAXISMOTION:
+						Player1.oncontrolleraxis(event.caxis);
 						break;
 					}
 				}
 
 				updatebackground(deltatime);
+				//updateplayer
+				   Player1.update(deltatime);
+
 
 				SDL_RenderClear(rend);
 				//draw imagebackground1
 				SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
-				SDL_RenderCopy(rend, title, NULL, &titlep);
-				SDL_RenderCopy(rend, ptitle, NULL, &ptitlep);
+				//SDL_RenderCopy(rend, title, NULL, &titlep);
+				//SDL_RenderCopy(rend, ptitle, NULL, &ptitlep);
+
+                      Player1.draw(rend);
 
 
-
-
-				SDL_RenderCopy(rend, cur, NULL, &curpos);
+				//SDL_RenderCopy(rend, cur, NULL, &curpos);
 				SDL_RenderPresent(rend);
 
 			}
@@ -1037,10 +1064,7 @@ int main(int argc, char* argv[]) {
 
 			players2 = true;
 
-			cout << "the game state is play2" << endl;
-			cout << "press A button for win" << endl;
-			cout << "press B for lose" << endl;
-			cout << endl;
+			
 
 			while (players2)
 			{
@@ -1062,35 +1086,46 @@ int main(int argc, char* argv[]) {
 
 					case SDL_CONTROLLERBUTTONDOWN:
 
-						if (event.cdevice.which == 0)
+						if (event.cdevice.which == 0 || event.cdevice.which == 1)
 						{
-							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
+							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
 							{
 								players2 = false;
 								gamestate = win;
 							}
-							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
+							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_Y)
 							{
 								players2 = false;
 								gamestate = lose;
 							}
-
+							Player1.oncontrollerbutton(event.cbutton);
+							Player2.oncontrollerbutton(event.cbutton);
 						}
+						break;
+					case SDL_CONTROLLERAXISMOTION:
+
+						Player1.oncontrolleraxis(event.caxis);
+						Player2.oncontrolleraxis(event.caxis);
+
 						break;
 					}
 				}
 				updatebackground(deltatime);
+				Player1.update(deltatime);
+				Player2.update(deltatime);
+
 
 				SDL_RenderClear(rend);
 				SDL_RenderCopy(rend, bkgd1, NULL, &bkgd1Pos);
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
-				SDL_RenderCopy(rend, title, NULL, &titlep);
-				SDL_RenderCopy(rend, p2title, NULL, &ptitlep);
+				//SDL_RenderCopy(rend, title, NULL, &titlep);
+				//SDL_RenderCopy(rend, p2title, NULL, &ptitlep);
+
+				Player1.draw(rend);
+				Player2.draw(rend);
 
 
-
-
-				SDL_RenderCopy(rend, cur, NULL, &curpos);
+				//SDL_RenderCopy(rend, cur, NULL, &curpos);
 				SDL_RenderPresent(rend);
 
 			}
@@ -1237,18 +1272,21 @@ int main(int argc, char* argv[]) {
 						{
 							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
 							{
-								if(play1over)
+								if(playaginover)
 														  {
-															  Win = false;
+															  Lose = false;
+															  playaginover = false;
 															gamestate = Playone;
-															play1over=false;
+															
 
 														}
 														  if(menuover)
 														  {
-															  Win=false;
+															  
+															  Lose =false;
+															  menuover = false;
 															  gamestate=MENU;
-															  menuover=false;
+															  
 														  }
 
 							}
@@ -1266,7 +1304,7 @@ int main(int argc, char* argv[]) {
 				updatecursor(deltatime);
 
 								menuover=SDL_HasIntersection(&activpos,&memunp);
-								play1over=SDL_HasIntersection(&activpos,&playnp);
+								playaginover =SDL_HasIntersection(&activpos,&playnp);
 
 
 
@@ -1287,7 +1325,7 @@ int main(int argc, char* argv[]) {
 											SDL_RenderCopy(rend, memun, NULL, &memunp);//menu overstate memuo
 											}
 
-								if(play1over)
+								if(playaginover)
 								{
 									SDL_RenderCopy(rend, playo, NULL, &playnp);
 								}else
@@ -1302,13 +1340,13 @@ int main(int argc, char* argv[]) {
 				SDL_RenderPresent(rend);
 
 			}
-			break;//end play2
+			break;
 
 
 
 		}
 	}
-	}
+
 
 	// SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
 

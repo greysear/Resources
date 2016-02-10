@@ -31,11 +31,17 @@
 #include <string>
 #include <iostream>
 
+#include <vector>
+#include "bullet.h"
+
 using namespace std;
 
 class Player
 {
 public:
+
+	//bullet list 
+	vector<bullet> bulletlist;
 	//strting holds play texture
 	string playpath;
 	//int play number 1 || 0
@@ -71,5 +77,7 @@ public:
 	//destroy player
 
 	~Player();
+private:
+	void Createbullet();
 
 };
