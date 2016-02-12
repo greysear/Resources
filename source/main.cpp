@@ -270,8 +270,7 @@ int main(int argc, char* argv[]) {
 	//create the renderer
 	rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	Player Player1 = Player(rend,0,images_dir.c_str(),250.0,500.0);
-	Player Player2 = Player(rend, 1, images_dir.c_str(), 750.0, 500.0);
+
 
 	string BKGDpath = images_dir + "/back1.png";
 	//
@@ -749,6 +748,8 @@ int main(int argc, char* argv[]) {
 	Mix_Chunk *pressedsound=Mix_LoadWAV((audio_dir+"pressed.wav").c_str());
 	bool alreadyover=false;
 
+	Player Player1 = Player(rend,0,images_dir.c_str(),audio_dir.c_str(),250.0,500.0);
+		Player Player2 = Player(rend, 1, images_dir.c_str(), audio_dir.c_str(),750.0, 500.0);
 
 	//set up initial state
 	GameState gamestate = MENU;
@@ -771,6 +772,7 @@ int main(int argc, char* argv[]) {
 		case MENU:
 
 			menu = true;
+			alreadyover=false;
 
 
 			while (menu)
@@ -804,27 +806,34 @@ int main(int argc, char* argv[]) {
 							{
 								if(play1over)
 								{
+									Mix_PlayChannel(-1,pressedsound,0);
 									menu=false;
 									gamestate=Playone;
 									play1over=false;
+
 								}
 
 								if(play2over)
 								{
+									Mix_PlayChannel(-1,pressedsound,0);
 									gamestate=play2;
 									menu=false;
 									play2over=false;
 								}
 								if(instructover)
 								{
+									Mix_PlayChannel(-1,pressedsound,0);
 								gamestate = instruct;
 								menu=false;
 							instructover=false;
 								}
 								if(quitover)
 								{
+									Mix_PlayChannel(-1,pressedsound,0);
+									SDL_Delay(300);
 									menu=false;
 									quit=true;
+									quitover=false;
 								}
 
 										}break;
@@ -858,6 +867,20 @@ int main(int argc, char* argv[]) {
 				SDL_RenderCopy(rend, title, NULL, &titlep);
 
 				//////////***************logic for button states*********//////////
+
+				if(play1over||play2over||instructover||quitover)
+				{
+					if(alreadyover==false)
+					{
+						Mix_PlayChannel(-1,oversound,0);
+						alreadyover=true;
+					}
+				}
+				if(!play1over&& !play2over &&!instructover && !quitover)
+				{
+					alreadyover=false;
+				}
+
 				if(play1over)
 				{
 				SDL_RenderCopy(rend, p1bbo, NULL, &p1bp);
@@ -904,6 +927,7 @@ int main(int argc, char* argv[]) {
 		case instruct:
 
 			instruction = true;
+			alreadyover=false;
 
 		
 
@@ -935,6 +959,7 @@ int main(int argc, char* argv[]) {
 							{
 								if(menuover)
 								{
+									Mix_PlayChannel(-1,pressedsound,0);
 
 								instruction = false;
 								gamestate = MENU;
@@ -971,6 +996,20 @@ int main(int argc, char* argv[]) {
 				SDL_RenderCopy(rend, title, NULL, &titlep);
 				SDL_RenderCopy(rend, ititle, NULL, &ititlep);
 
+
+				if(menuover)
+								{
+									if(alreadyover==false)
+									{
+										Mix_PlayChannel(-1,oversound,0);
+										alreadyover=true;
+									}
+								}
+								if(!menuover)
+								{
+									alreadyover=false;
+								}
+
 				if(menuover)
 				{
 
@@ -993,6 +1032,7 @@ int main(int argc, char* argv[]) {
 		case Playone:
 
 			play1 = true;
+
 
 
 
@@ -1063,6 +1103,7 @@ int main(int argc, char* argv[]) {
 		case play2:
 
 			players2 = true;
+
 
 			
 
@@ -1137,6 +1178,7 @@ int main(int argc, char* argv[]) {
 		case win:
 
 			Win = true;
+			alreadyover=false;
 
 			cout << "the game state is win" << endl;
 			cout << "press A button for menu" << endl;
@@ -1170,6 +1212,7 @@ int main(int argc, char* argv[]) {
 
 							  if(play1over)
 							  {
+								  Mix_PlayChannel(-1,pressedsound,0);
 								  Win = false;
 								gamestate = Playone;
 								play1over=false;
@@ -1177,6 +1220,7 @@ int main(int argc, char* argv[]) {
 							}
 							  if(menuover)
 							  {
+								  Mix_PlayChannel(-1,pressedsound,0);
 								  Win=false;
 								  gamestate=MENU;
 								  menuover=false;
@@ -1210,6 +1254,18 @@ int main(int argc, char* argv[]) {
 				SDL_RenderCopy(rend, wtitle, NULL, &ptitlep);
 				//playo
 
+				if(menuover||play1over)
+											{
+												if(alreadyover==false)
+												{
+													Mix_PlayChannel(-1,oversound,0);
+													alreadyover=true;
+												}
+											}
+											if(!menuover&&!play1over)
+											{
+												alreadyover=false;
+											}
 				if(menuover)
 							{
 
@@ -1242,6 +1298,7 @@ int main(int argc, char* argv[]) {
 		case lose:
 
 			Lose = true;
+			alreadyover=false;
 
 			cout << "the game state is lose" << endl;
 
@@ -1274,6 +1331,7 @@ int main(int argc, char* argv[]) {
 							{
 								if(playaginover)
 														  {
+									Mix_PlayChannel(-1,pressedsound,0);
 															  Lose = false;
 															  playaginover = false;
 															gamestate = Playone;
@@ -1282,7 +1340,7 @@ int main(int argc, char* argv[]) {
 														}
 														  if(menuover)
 														  {
-															  
+															  Mix_PlayChannel(-1,pressedsound,0);
 															  Lose =false;
 															  menuover = false;
 															  gamestate=MENU;
@@ -1313,6 +1371,20 @@ int main(int argc, char* argv[]) {
 				SDL_RenderCopy(rend, bkgd2, NULL, &bkgd2Pos);
 				SDL_RenderCopy(rend, title, NULL, &titlep);
 				SDL_RenderCopy(rend, ltitle, NULL, &ptitlep);
+
+				if(menuover||playaginover)
+															{
+																if(alreadyover==false)
+																{
+																	Mix_PlayChannel(-1,oversound,0);
+																	alreadyover=true;
+																}
+															}
+															if(!menuover&&!playaginover)
+															{
+																alreadyover=false;
+															}
+
 
 				if(menuover)
 											{

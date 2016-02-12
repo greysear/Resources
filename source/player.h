@@ -8,6 +8,8 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_mixer.h"
+#include "SDL_ttf.h"
 
 
 
@@ -16,6 +18,8 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2_image/SDL_image.h"
+#include "SDL2_mixer/SDL_mixer.h"
+#include "SDL2_ttf/SDL_ttf.h"
 
 #endif
 
@@ -23,14 +27,15 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
-
+#include "SDL2/SDL_mixer.h"
+#include "SDL2/SDL_ttf.h"
 #endif
 
 
 #include <stdio.h>
 #include <string>
 #include <iostream>
-
+#include <sstream>
 #include <vector>
 #include "bullet.h"
 
@@ -39,6 +44,23 @@ using namespace std;
 class Player
 {
 public:
+
+	int playerscore,oldscore,playerlives,oldlives;
+
+	TTf_Font *font;
+	SDL_Color colorP1 ={0,255,0,255};
+	SDL_Color colorP2={0,0,255,255};
+
+	SDL_Surface *scoreSurface,*livesSurface;
+	SDL_Texture *scoretext,*livetext;
+
+	SDL_Rect scorepos,livepos;
+	string tempscore,templives;
+
+
+
+
+	Mix_Chunk *laser;
 
 	//bullet list 
 	vector<bullet> bulletlist;
@@ -58,7 +80,7 @@ public:
 
 	float posX,PosY;
 
-	Player(SDL_Renderer *rend,int pnum,string filepath,float x,float y);
+	Player(SDL_Renderer *rend,int pnum,string filepath,string audiopath,float x,float y);
 
 
 

@@ -8,12 +8,25 @@
 //analog joy stick deads zone
 const int JOYSTICK_DEAD_ZONE=8000;
 
-Player::Player(SDL_Renderer*rend,int pnum,string filepath,float x,float y)
+Player::Player(SDL_Renderer*rend,int pnum,string filepath,string audiopath,float x,float y)
 {
 
 	playnum = pnum;
 //cout<<pnum<<"player number is"<<endl;
 	Speed=500.0f;
+laser =Mix_LoadWAV((audiopath+"shoot.wav").c_str());
+
+//init score and lives var;
+
+playerscore=0;
+oldscore=0;
+playerlives=3;
+oldlives=0;
+//init font system
+
+TTF_Init();
+
+font=TTF_OpenFont((filepath+"Coalition_v2..ttf"))
 
 	if(playnum==0)
 	{
@@ -25,6 +38,7 @@ Player::Player(SDL_Renderer*rend,int pnum,string filepath,float x,float y)
 
 
 	}
+
 	surface = IMG_Load(playpath.c_str());
 
 	if (surface == NULL) {
@@ -86,6 +100,8 @@ void Player::Createbullet()
 		
 		if (bulletlist[i].active == false)
 		{
+
+			Mix_PlayChannel(-1,laser,0);
 			bulletlist[i].active = true;
 
 		bulletlist[i].bulpos.x = (posX + (posRect.w / 2));
